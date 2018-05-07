@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.3
+    environment:
+      - cluster.name=docker-cluster
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - xpack.security.enabled=false
+      - cluster.name=elasticsearch
+      - http.cors.enabled=true    #this is for head utility
+      - http.cors.allow-origin=*  #this is for head utility
+    container_name: demo-elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      demo-net:
+        aliases:
+          - es
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.4.3
+    container_name: demo-els-kibana
+    ports:
+      - 5601:5601
+    depends_on: ['elasticsearch']
+    networks:
+      demo-net:
+
+  head:
+    image: mobz/elasticsearch-head:5
+    container_name: demo-els-head
+    ports:
+        - 9100:9100
+    depends_on: ['elasticsearch']
+    networks:
+        demo-net:
+
+networks:
+  demo-net:
